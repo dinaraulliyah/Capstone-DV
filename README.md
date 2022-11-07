@@ -1,5 +1,9 @@
 # Capstone-DV
+Shinyapp:
+
 https://dinaraulliyah.shinyapps.io/Waste-Generation-in-Bandung/
+
+
 Reactivity demo video
 
 
