@@ -1,0 +1,260 @@
+---
+title: "Briefing DV capstone"
+author: "Dinar Aulliyah Balqis"
+date: "`r Sys.Date()`"
+output: 
+ html_document:
+   theme: cosmo
+   highlight: breezedark
+   toc: true
+   toc_float: 
+   collapsed: false
+   highlight: zenburn
+   df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+File ini berisi template untuk mejawab pertanyaan 5W+1H saat briefing Capstone Data Visualization sebagai langkah awal sebelum membuat Dashboard. Silakan Bapak/Ibu mengisi jawaban di bawah. 
+
+File ini tidak akan dinilai namun Bapak/Ibu **WAJIB** disubmit ke dalam classroom pada hari H briefing Capstone Data Visualization.
+
+# What
+
+Tentukan tujuan atau informasi yang ingin ditampilkan dalam dashboard
+
+**Jawab**
+
+Tujuan yang ingin dicapai atau informasi yang ingin disampaikan:
+
+- Secara umum mengangkat topik pengelolaan sampah di Kota Bandung. Berusaha pula menjawab sebagian besar data terkait yang dibutuhkan oleh kebanyakan kalangan akademisi terutama dan keterbukaan data pada publik umumnya.
+- Memberikan gambaran secara general terkait urgensi pengelolaan sampah rendah karbon untuk skala kota. Dalam hal ini, studi kasusnya Kota Bandung.
+- Menampilkan dan memberi 'hint' atau indikasi potensi awal yang bisa didapatkan dari pengelolaan sampah yang rendah karbon dengan memanfaatkan Clean Development Mechanism.
+- Data  yang sekiranya akan ditampilkan, meliputi timbulan sampah yang dihasilkan penduduk Kota Bandung, jumlah penduduk Kota Bandung, emisi yang berpotensi dihasilkan dari sampah, capaian pengelolaan sampah di Kota Bandung, dll.
+
+# Who
+
+Untuk siapa dashboard ini dibuat? Siapa target pembaca dari dashboard ini?
+
+**Jawab**
+
+Spesifiknya ditujukan untuk akademisi atau professional, baik yang sedang melakukan penelitian ataupun sekadar mencari referensi
+
+# Why
+
+Apakah data yang dibuat relevan atau sesuai dengan tujuan? Mengapa?
+
+**Jawab**
+
+Ya, bahkan bisa dikatakan sangat sesuai karena saya sendiri kesulitan mencari data valid untuk penelitian yang sedang dilakukan saat ini. Di program studi planologi terutama, terlebih ketika membahas data Indonesia dan daerahnya, hal yang paling menantang adalah pencarian data yang valid. Mungkin studi lain tidak banyak menggali mengenai ini ataupun tidak begitu membutuhkan banyak jenis data dalam analisisnya. 
+
+Namun berbeda untuk planologi (urban and regional planning), banyak sekali data yang dibutuhkan bahkan hanya untuk 1 analisis. Kendala yang dihadapi oleh akademisi dan professional yang bekerja berdasarkan data di Indonesia adalah datanya tidak open source, mungkin bukan karena tidak transparan tetapi lebih pada manajemen data di Dinas ataupun lembaga terkait pun masih berantakan. Mungkin juga tidak hanya planologi yang sangat merasakannya, bisa teknik lingkungan, geografi, dll juga merasakan apabila membutuhkan data sekunder dari instansi. 
+
+Oleh karenanya, saya ingin membantu rekan-rekan akademisi ataupun masyarakat umumnya untuk lebih mudah mengetahui data-data yang ada dan bisa menggambarkan kondisi saat ini. Tentunya data ini akan lebih bermanfaat jika dilakukan analisis lanjutan dibandingkan hanya dieksplor. Saya pikir, ini bisa jadi inisiasi open source data spesifik sekaligus saran bagi pemerintah dalam inventarisasi dan manajemen data.
+
+# When
+
+Apakah data yang digunakan masih *up to date* atau masih relevan dengan kondisi sekarang? Apakah ada informasi tentang tanggal update terakhir dari data tersebut?
+
+**Jawab**
+
+Bisa dikatakan up to date, karena data terbaru pemerintah general diperbarui per pertengahan tahun untuk Provinsi/Kota/Kabupaten/Kecamatan/Kelurahan/Desa dalam Angka. Data tersebut diterbitkan oleh Badan Pusat Statistik, baik di website pusatnya ataupun daerah. Sedangkan data kedinasan atau kementerian akan diperbarui per akhir tahun terkait. Untuk data ini, tahun terakhirnya adalah 2021 dan dikeluarkan oleh Dinas Lingkungan Hidup dan Kebersihan Kota Bandung, PD. Kebersihan Kota Bandung, Dinas Kependudukan dan Pencatatan Sipil Kota Bandung, dll. Sehingga jelas, datanya yang digunakan adalah yang terbaru.
+
+
+# How
+
+Bagaimana Bapak/Ibu menggunakan visualisasi untuk menjawab tujuan yang telah disebutkan? 
+
+Buat plot yang akan dimasukkan ke dalam dashboard. Boleh dalam bentuk `ggplot` maupun `plotly`.
+
+**Jawab**
+
+Plot untuk menjawab tujuan pertama
+```{r}
+library(flexdashboard)
+
+# load library
+options(scipen = 99)
+library(tidyverse) # koleksi beberapa package R
+library(dplyr) # grammar of data manipulation
+library(readr) # membaca data
+library(ggplot2) # plot statis
+library(plotly) # plot interaktif
+library(glue) # setting tooltip
+library(scales) # mengatur skala pada plot
+```
+
+```{r}
+# your code here
+dps <- readxl::read_excel("Data-Pengelolaan-Sampah.xlsx", sheet = 1)
+dps2 <- readxl::read_excel("Data-Pengelolaan-Sampah.xlsx", sheet = 2)
+```
+
+```{r}
+glimpse(dps)
+```
+
+```{r}
+dps
+```
+
+
+
+```{r}
+dps %>%
+  filter(Data == c("TPS", "Waste bank"))
+```
+
+```{r}
+#Population Data
+pop_data <- dps %>% 
+  filter(Data == c("Population", "Population birth", "Population death", 
+                   "In migration", "Out migration", "Working people", "Residents not working")) %>%
+  select("Data", "Year", "Value") %>%
+  mutate(Population = glue("Population : {comma(Value)} people"))
+pop_data
+```
+
+```{r}
+#Population Data
+#population <- dps %>% 
+#  filter(Data == c("Population", "Population_birth", "Population_death", 
+#                   "In_migration", "Out_migration", "Working_people", "Residents_not_working")) %>%
+#  select("Data", "Year", "Value") %>%
+#  mutate(Population = glue("Population : {comma(Value)} people"))
+#population
+```
+
+```{r}
+#Static Plot Population
+pop_plot <- ggplot(pop_data, aes(x = Year, y = Value, color = Data, group = Data)) + 
+  geom_line(size = 1) +
+  geom_point(color = "black", size = 2, aes(text = Population)) +
+  labs(title = "Population Growth in Bandung") +
+  scale_y_continuous(labels = comma) +
+  theme_minimal()
+pop_plot
+```
+
+
+Interactive Plot
+```{r}
+# Interactive Plot Population
+ggplotly(pop_plot, tooltip = "text")
+```
+
+```{r}
+#Waste Generation Data
+wg <- dps %>% 
+  filter(Data == "Waste generation") %>%
+  select("Data", "Year", "Value") %>%
+  mutate(Waste = glue("Waste generation : {comma(Value)} ton"))
+wg
+```
+
+
+```{r}
+#Waste Generation Static Plot
+wg_line <- ggplot(data = wg, aes(x = Year, y = Value, group = Data)) +
+  geom_line(color = "brown", size = 1) +
+  geom_point(color = "black", size = 2, aes(text = Waste)) +
+  labs(title = "Waste Generation in Bandung") +
+  scale_y_continuous(labels = comma) +
+  theme_minimal()
+wg_line
+```
+
+```{r}
+#Waste Generation Interactive Plot
+ggplotly(wg_line, tooltip = "text")
+```
+
+```{r}
+#Source of Waste Data
+sw <- dps %>% 
+  filter(Data == c("Household", "Public facility", "Market", "Commercial", "District", "Office area", "Other")) %>%
+  select("Data", "Value") %>%
+  mutate(Percentage = glue("Proportion : {(Value)}%"))
+sw
+```
+
+```{r}
+# Interactive Pie Chart: Source of Waste
+sw_pie <- sw %>%
+  e_charts(Data)  %>% 
+  e_pie(Value, radius = c("50%", "70%")) %>%
+  e_tooltip()
+sw_pie
+```
+
+```{r}
+dps
+```
+
+
+```{r}
+# Waste Management per Year Data
+wm <- dps %>%
+  filter(Data %in% c("TPS", "Waste bank", "TPA", "ITF non-incinerator", "Informal handled", "Not handled waste"),
+         Year == "2021") %>%
+  select(Data, Year, Value) %>%
+  mutate(Managed = glue("Value : {comma(Value)} ton")) %>%
+  arrange(desc(Value))
+
+wm
+```
+
+```{r}
+#Waste Management Static Plot
+wm_bar <- ggplot(data = wm, 
+       mapping = aes(x = Value, 
+                     y = reorder(Data, Value), 
+                     fill = Data,
+                     text = Managed)) + 
+  geom_bar(stat = "identity") + 
+  scale_x_continuous(labels = comma) +
+  labs(x = "",
+       y = "Type of Waste Management") +
+  theme_minimal()
+wm_bar
+```
+
+```{r}
+#Waste Generation Interactive Plot
+ggplotly(wm_bar, tooltip = "text")
+```
+
+#Exporting plot
+```{r}
+# your code here
+library(ggpubr) # publikasi plot
+```
+
+Buat chunk baru apabila ada lebih dari 3 plot.
+
+# Where
+
+Bagaimana desain layout atau tata letak dashboard yang akan dibuat?
+
+**Jawab**
+
+Contoh penulisan layout. 
+
+Tab atau halaman pertama
+
+- Background (Pengenalan singkat dengan data dan tujuan visualisasi)
+- Line plot jumlah penduduk, timbulan sampah, jumlah penduduk lahir & mati, jumlah penduduk bermigrasi (per tahun 2015-2021) -> reactive plot
+- Diagram Lingkaran Komposisi Sampah (https://r-graph-gallery.com/piechart-ggplot2.html)
+- Bar plot Sumber Sampah
+
+Tab atau halaman kedua
+
+- Brief Pengelolaan sampah di Kota Bandung dan definisi pengelolaan sampah (pengurangan dan penanganan sampah)
+- Capaian kinerja pengelolaan sampah di Kota Bandung (pengurangan, penanganan, sampah dikelola sektor informal, dan sampah tidak terkelola)
+- Prediksi emisi yang dihasilkan dari timbulan sampah yang tidak terkelola dan dikelola oleh TPA (perhitungan dengan metode IPCC)
+
+Tab atau halaman ketiga
+- embed link ke GitHub untuk keseluruhan dokumentasi terkait
+
